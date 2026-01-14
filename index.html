@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-<title>Math Master Timer Edition</title>
+<title>Math Master Mobile</title>
 <style>
 :root {
   --bg: #0f172a; --glass: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.1);
@@ -15,41 +15,40 @@ body {
   margin: 0; font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--text);
   min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
 }
-.container { width: 100%; max-width: 480px; padding: 20px; }
+.container { width: 100%; max-width: 480px; padding: 15px; }
 .card {
   background: var(--glass); backdrop-filter: blur(25px); border: 1px solid var(--glass-border);
-  border-radius: 32px; padding: 25px; position: relative;
+  border-radius: 28px; padding: 20px; position: relative;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  display: flex; flex-direction: column; gap: 15px;
+  display: flex; flex-direction: column; gap: 12px;
 }
 
-/* 상단 정보바 레이아웃 수정 */
-.top-row { display: flex; justify-content: space-between; align-items: center; height: 35px; }
-.timer-display { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--warning); font-size: 1.1rem; }
-.status-left { display: flex; align-items: center; gap: 10px; flex: 1; }
-.quit-area { flex: 1; text-align: right; }
+/* 상단바: 3구역 분할 (좌: 정보, 중: 타이머, 우: 종료) */
+.top-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 40px; }
+.status-left { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.timer-display { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--warning); font-size: 1.2rem; text-align: center; }
+.quit-area { text-align: right; }
 
-.combo-mini { font-weight: 900; font-style: italic; color: var(--success); font-size: 0.9rem; opacity: 0; transition: 0.2s; }
-.combo-visible { opacity: 1; transform: scale(1.1); }
+.combo-mini { font-weight: 900; font-style: italic; color: var(--success); font-size: 0.8rem; opacity: 0; line-height: 1; }
+.combo-visible { opacity: 1; }
 
-.gauge-area { width: 100%; height: 5px; background: rgba(0,0,0,0.3); border-radius: 3px; overflow: hidden; opacity: 0; }
+.gauge-area { width: 100%; height: 4px; background: rgba(0,0,0,0.3); border-radius: 2px; overflow: hidden; opacity: 0; }
 
-.problem { font-size: 4rem; font-weight: 800; text-align: center; min-height: 140px; display: flex; align-items: center; justify-content: center; }
+.problem { font-size: 3.5rem; font-weight: 800; text-align: center; min-height: 110px; display: flex; align-items: center; justify-content: center; }
 .math-exp .sub-n, .math-exp .sub-r { font-size: 0.45em; color: var(--accent); vertical-align: -0.1em; font-family: 'Times New Roman'; }
 
 input[type='text'] {
-  background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); border-radius: 20px;
-  padding: 18px; color: #fff; font-size: 1.8rem; text-align: center; width: 100%; outline: none; transition: 0.3s;
+  background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); border-radius: 18px;
+  padding: 15px; color: #fff; font-size: 1.6rem; text-align: center; width: 100%; outline: none;
 }
 input[type='text'].wrong-answer { color: var(--danger); border-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
 
 .btn {
-  background: var(--accent); color: #fff; border: none; border-radius: 20px; padding: 18px;
+  background: var(--accent); color: #fff; border: none; border-radius: 18px; padding: 16px;
   font-size: 1.1rem; font-weight: 700; cursor: pointer;
 }
-.btn:disabled { opacity: 0.5; }
 
-.badge { padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; }
+.badge { padding: 3px 7px; border-radius: 5px; font-size: 0.6rem; font-weight: 800; }
 .EASY { background: rgba(16, 185, 129, 0.2); color: var(--success); }
 .NORMAL { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
 .HARD { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
@@ -58,18 +57,24 @@ input[type='text'].wrong-answer { color: var(--danger); border-color: var(--dang
   position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
   display: none; align-items: center; justify-content: center; z-index: 100;
 }
+
+/* 모바일 가로모드나 아주 작은 화면 대응 */
+@media (max-height: 500px) {
+  .problem { min-height: 80px; font-size: 2.5rem; }
+  .card { padding: 15px; gap: 8px; }
+}
 </style>
 </head>
 <body>
 <div class="container">
   <div id="lobby" style="text-align: center;">
-    <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 40px; background: linear-gradient(to right, #fff, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MATH MASTER</h1>
+    <h1 style="font-size: 2.8rem; font-weight: 900; margin-bottom: 30px; background: linear-gradient(to right, #fff, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MATH MASTER</h1>
     <div style="display: grid; gap: 12px;">
       <button onclick="startGame('record')" class="btn">기록 도전 (10회)</button>
       <button onclick="startGame('practice')" class="btn" style="background: var(--glass); border: 1px solid var(--glass-border);">자유 연습</button>
-      <button onclick="toggleSettings(true)" class="btn" style="background: transparent; color: var(--text-muted); font-size: 0.9rem;">⚙️ 설정</button>
+      <button onclick="toggleSettings(true)" class="btn" style="background: transparent; color: var(--text-muted); font-size: 0.85rem;">⚙️ 설정</button>
     </div>
-    <p style="margin-top: 30px; font-size: 0.8rem; color: var(--text-muted);">BEST: <span id="bestTime" style="color: var(--warning);">—</span></p>
+    <p style="margin-top: 25px; font-size: 0.8rem; color: var(--text-muted);">BEST: <span id="bestTime" style="color: var(--warning);">—</span></p>
   </div>
 
   <section id="gameArea" class="card" style="display:none;">
@@ -80,7 +85,7 @@ input[type='text'].wrong-answer { color: var(--danger); border-color: var(--dang
       </div>
       <div id="liveTimer" class="timer-display">0.0s</div>
       <div class="quit-area">
-        <div onclick="location.reload()" style="cursor: pointer; font-size: 0.75rem; color: var(--text-muted); font-weight: 800;">✕ QUIT</div>
+        <div onclick="location.reload()" style="cursor: pointer; font-size: 0.75rem; color: var(--text-muted); font-weight: 800;">✕</div>
       </div>
     </div>
     
@@ -88,24 +93,24 @@ input[type='text'].wrong-answer { color: var(--danger); border-color: var(--dang
 
     <div id="problemDisplay" class="problem"></div>
 
-    <input id="answerInput" type="text" inputmode="numeric" placeholder="정답 입력" autocomplete="off" />
+    <input id="answerInput" type="text" inputmode="numeric" placeholder="정답" autocomplete="off" />
     <button id="submitBtn" class="btn">확인</button>
-    <div id="statusInfo" style="text-align: center; font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-top: 5px;"></div>
+    <div id="statusInfo" style="text-align: center; font-size: 0.75rem; color: var(--text-muted); font-weight: bold;"></div>
   </section>
 
   <div id="resultModal" class="modal">
-    <div style="background: #1e293b; width: 90%; max-width: 380px; padding: 40px 30px; border-radius: 32px; text-align: center;">
-      <div style="color: var(--accent); font-weight: 800; letter-spacing: 2px;">MISSION COMPLETE</div>
-      <div id="newRecordLabel" style="background: var(--warning); color: #000; padding: 4px 12px; border-radius: 99px; font-size: 0.8rem; font-weight: 800; display: none; margin: 15px 0;">NEW RECORD!</div>
-      <div id="finalTime" style="font-size: 4rem; font-weight: 900; color: #fff; margin: 10px 0;">0.0s</div>
+    <div style="background: #1e293b; width: 85%; max-width: 340px; padding: 35px 25px; border-radius: 28px; text-align: center;">
+      <div style="color: var(--accent); font-weight: 800; letter-spacing: 2px; font-size: 0.9rem;">MISSION COMPLETE</div>
+      <div id="newRecordLabel" style="background: var(--warning); color: #000; padding: 4px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: 800; display: none; margin: 15px 0;">NEW RECORD!</div>
+      <div id="finalTime" style="font-size: 3.5rem; font-weight: 900; color: #fff; margin: 10px 0;">0.0s</div>
       <button onclick="location.reload()" class="btn" style="width: 100%;">다시 도전</button>
     </div>
   </div>
 
   <div id="settingsModal" class="modal">
-    <div style="background: #1e293b; padding: 30px; border-radius: 28px; width: 320px;">
+    <div style="background: #1e293b; padding: 25px; border-radius: 24px; width: 300px;">
       <h3 style="margin-bottom: 20px; text-align: center;">문제 구성</h3>
-      <div id="typeChecks" style="display: grid; gap: 15px; margin-bottom: 30px;">
+      <div id="typeChecks" style="display: grid; gap: 12px; margin-bottom: 25px;">
         <label><input type="checkbox" data-type="fact" checked> 팩토리얼 (!)</label>
         <label><input type="checkbox" data-type="perm" checked> 순열 (P)</label>
         <label><input type="checkbox" data-type="comb" checked> 조합 (C)</label>
@@ -132,18 +137,12 @@ const nPr = (n, r) => {
     return num;
 };
 
-const state = { 
-    mode: null, score: 0, startTime: 0, combo: 0, comboTime: 100, 
-    interval: null, timerInterval: null, lock: false, current: null 
-};
-
+const state = { mode: null, score: 0, startTime: 0, combo: 0, comboTime: 100, interval: null, timerInterval: null, lock: false, current: null };
 const UI = {
-  lobby: document.getElementById('lobby'), game: document.getElementById('gameArea'), 
-  problem: document.getElementById('problemDisplay'), input: document.getElementById('answerInput'), 
-  combo: document.getElementById('comboDisplay'), bar: document.getElementById('comboBar'),
-  gauge: document.getElementById('comboGauge'), badge: document.getElementById('diffBadge'), 
-  status: document.getElementById('statusInfo'), resultModal: document.getElementById('resultModal'), 
-  finalTime: document.getElementById('finalTime'), newRecord: document.getElementById('newRecordLabel'), 
+  lobby: document.getElementById('lobby'), game: document.getElementById('gameArea'), problem: document.getElementById('problemDisplay'),
+  input: document.getElementById('answerInput'), combo: document.getElementById('comboDisplay'), bar: document.getElementById('comboBar'),
+  gauge: document.getElementById('comboGauge'), badge: document.getElementById('diffBadge'), status: document.getElementById('statusInfo'),
+  resultModal: document.getElementById('resultModal'), finalTime: document.getElementById('finalTime'), newRecord: document.getElementById('newRecordLabel'),
   submit: document.getElementById('submitBtn'), liveTimer: document.getElementById('liveTimer')
 };
 
@@ -152,14 +151,10 @@ window.toggleSettings = (show) => { document.getElementById('settingsModal').sty
 window.startGame = (mode) => {
   state.mode = mode; state.score = 0; state.combo = 0; state.startTime = Date.now();
   UI.lobby.style.display = 'none'; UI.game.style.display = 'flex';
-  
-  // 실시간 타이머 시작
   if (state.timerInterval) clearInterval(state.timerInterval);
   state.timerInterval = setInterval(() => {
-    const elapsed = ((Date.now() - state.startTime) / 1000).toFixed(1);
-    UI.liveTimer.textContent = elapsed + 's';
+    UI.liveTimer.textContent = ((Date.now() - state.startTime) / 1000).toFixed(1) + 's';
   }, 100);
-
   next();
 };
 
@@ -167,22 +162,15 @@ function generate() {
   const types = Array.from(document.querySelectorAll('#typeChecks input:checked')).map(el => el.dataset.type);
   const type = types.length > 0 ? types[Math.floor(Math.random() * types.length)] : 'comb';
   let n, r, ans;
-
   while(true) {
-    if (type === 'fact') {
-      n = Math.floor(Math.random() * 8) + 1;
-      ans = fact(BigInt(n));
-    } else {
-      n = Math.floor(Math.random() * 11) + 2; 
-      r = Math.floor(Math.random() * (n - 1)) + 1;
-      let effN = n, effR = r;
-      if (type === 'multi') { effN = n + r - 1; effR = r; }
-      if (effN > 12) continue;
-      if (type === 'perm') { if (effN > 5 && effR > 4) continue; } 
-      else { let calcR = Math.min(effR, effN - effR); if (effN > 10 && calcR > 4) continue; }
-      if (type === 'comb') ans = nCr(n, r);
-      else if (type === 'perm') ans = nPr(n, r);
-      else ans = nCr(n + r - 1, r);
+    if (type === 'fact') { n = Math.floor(Math.random() * 8) + 1; ans = fact(BigInt(n)); }
+    else {
+      n = Math.floor(Math.random() * 11) + 2; r = Math.floor(Math.random() * (n - 1)) + 1;
+      let eN = n, eR = r; if (type === 'multi') { eN = n + r - 1; eR = r; }
+      if (eN > 12) continue;
+      if (type === 'perm') { if (eN > 5 && eR > 4) continue; } 
+      else { let cR = Math.min(eR, eN - eR); if (eN > 10 && cR > 4) continue; }
+      ans = (type === 'comb') ? nCr(n, r) : (type === 'perm' ? nPr(n, r) : nCr(n + r - 1, r));
     }
     break;
   }
@@ -196,35 +184,29 @@ function next() {
   UI.badge.className = `badge ${UI.badge.textContent}`;
   UI.input.value = ''; UI.input.disabled = false; UI.input.className = ''; UI.submit.disabled = false;
   setTimeout(() => UI.input.focus(), 50);
-  
   const p = state.current;
   if (p.type === 'fact') UI.problem.innerHTML = `<span class="math-exp">${p.n}!</span>`;
   else {
     const s = p.type === 'comb' ? 'C' : p.type === 'perm' ? 'P' : 'H';
     UI.problem.innerHTML = `<span class="math-exp"><span class="sub-n">${p.n}</span><span style="font-weight:900;margin:0 0.15em;">${s}</span><span class="sub-r">${p.r}</span></span>`;
   }
-  UI.status.textContent = state.mode === 'record' ? `PROGRESS: ${state.score + 1} / 10` : 'FREE PRACTICE';
+  UI.status.textContent = state.mode === 'record' ? `PROGRESS: ${state.score + 1} / 10` : 'PRACTICE';
 }
 
 function check() {
   if (state.lock || !UI.input.value) return;
   state.lock = true;
-  const isCorrect = UI.input.value.trim() === state.current.ans;
-
-  if (isCorrect) {
+  if (UI.input.value.trim() === state.current.ans) {
     state.score++; state.combo++;
     UI.combo.textContent = `${state.combo} COMBO`;
     UI.combo.classList.add('combo-visible');
-    const color = state.combo < 5 ? '#10b981' : state.combo < 10 ? '#f59e0b' : '#ef4444';
-    UI.bar.style.backgroundColor = color; UI.combo.style.color = color;
+    UI.bar.style.backgroundColor = state.combo < 5 ? '#10b981' : state.combo < 10 ? '#f59e0b' : '#ef4444';
     startTimer();
     setTimeout(() => { if (state.mode === 'record' && state.score >= 10) finish(); else next(); }, 500);
   } else {
-    UI.input.value = state.current.ans; 
-    UI.input.classList.add('wrong-answer'); 
+    UI.input.value = state.current.ans; UI.input.classList.add('wrong-answer');
     UI.input.disabled = true; UI.submit.disabled = true;
-    resetCombo();
-    setTimeout(next, 1200);
+    resetCombo(); setTimeout(next, 1200);
   }
 }
 
@@ -242,16 +224,15 @@ function resetCombo() { clearInterval(state.interval); state.combo = 0; UI.gauge
 function finish() {
   clearInterval(state.timerInterval);
   const time = ((Date.now() - state.startTime) / 1000).toFixed(1);
-  const best = localStorage.getItem('mm_v8_best');
+  const best = localStorage.getItem('mm_v9_best');
   UI.finalTime.textContent = time + 's';
-  if (!best || parseFloat(time) < parseFloat(best)) { localStorage.setItem('mm_v8_best', time); UI.newRecord.style.display = 'inline-block'; }
-  else UI.newRecord.style.display = 'none';
+  if (!best || parseFloat(time) < parseFloat(best)) { localStorage.setItem('mm_v9_best', time); UI.newRecord.style.display = 'inline-block'; }
   UI.resultModal.style.display = 'flex';
 }
 
 UI.submit.onclick = check;
 UI.input.onkeydown = (e) => { if(e.key === 'Enter') check(); };
-const b = localStorage.getItem('mm_v8_best');
+const b = localStorage.getItem('mm_v9_best');
 if(b) document.getElementById('bestTime').textContent = b + 's';
 </script>
 </body>
