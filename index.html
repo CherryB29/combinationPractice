@@ -2,186 +2,257 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>조합 연습 — 새로 시작</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+<title>Math Master Timer Edition</title>
 <style>
-:root{--bg:#f6f8fb;--card:#fff;--accent:#6d28d9;--muted:#55607a;--success:#16a34a;--danger:#ef4444;--text:#0b1220}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:18px}
-.container{width:100%;max-width:980px}
-.card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 20px rgba(3,6,20,0.06)}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.title{color:var(--muted);margin:0}
-.controls{display:flex;gap:8px;align-items:center}
-.btn{background:linear-gradient(90deg,var(--accent),#8b5cf6);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
-.secondary{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:8px;border-radius:10px;color:var(--muted)}
-.problem{font-size:clamp(1.4rem,6vw,1.9rem);font-weight:800;text-align:center;padding:18px;border-radius:10px;background:linear-gradient(180deg,rgba(124,58,237,0.04),rgba(124,58,237,0.01));min-height:72px}
-.answer-row{display:flex;gap:8px;justify-content:center;margin-top:12px}
-input[type='text']{padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);min-width:120px;font-size:1rem}
-.feedback{margin-top:10px;text-align:center;font-weight:700;min-height:28px}
-.correct{color:var(--success)}.wrong{color:var(--danger)}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:flex-end;justify-content:center;padding:12px}
-.modal-card{background:var(--card);border-radius:12px;padding:12px;width:100%;max-width:420px}
-footer{margin-top:14px;text-align:right;color:var(--muted);font-size:0.9rem}
-@media(max-width:600px){.btn,.secondary{width:100%}}
+:root {
+  --bg: #0f172a; --glass: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.1);
+  --accent: #8b5cf6; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+  --text: #f8fafc; --text-muted: #94a3b8;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  margin: 0; font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--text);
+  min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.container { width: 100%; max-width: 480px; padding: 20px; }
+.card {
+  background: var(--glass); backdrop-filter: blur(25px); border: 1px solid var(--glass-border);
+  border-radius: 32px; padding: 25px; position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  display: flex; flex-direction: column; gap: 15px;
+}
+
+/* 상단 정보바 레이아웃 수정 */
+.top-row { display: flex; justify-content: space-between; align-items: center; height: 35px; }
+.timer-display { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--warning); font-size: 1.1rem; }
+.status-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+.quit-area { flex: 1; text-align: right; }
+
+.combo-mini { font-weight: 900; font-style: italic; color: var(--success); font-size: 0.9rem; opacity: 0; transition: 0.2s; }
+.combo-visible { opacity: 1; transform: scale(1.1); }
+
+.gauge-area { width: 100%; height: 5px; background: rgba(0,0,0,0.3); border-radius: 3px; overflow: hidden; opacity: 0; }
+
+.problem { font-size: 4rem; font-weight: 800; text-align: center; min-height: 140px; display: flex; align-items: center; justify-content: center; }
+.math-exp .sub-n, .math-exp .sub-r { font-size: 0.45em; color: var(--accent); vertical-align: -0.1em; font-family: 'Times New Roman'; }
+
+input[type='text'] {
+  background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); border-radius: 20px;
+  padding: 18px; color: #fff; font-size: 1.8rem; text-align: center; width: 100%; outline: none; transition: 0.3s;
+}
+input[type='text'].wrong-answer { color: var(--danger); border-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+
+.btn {
+  background: var(--accent); color: #fff; border: none; border-radius: 20px; padding: 18px;
+  font-size: 1.1rem; font-weight: 700; cursor: pointer;
+}
+.btn:disabled { opacity: 0.5; }
+
+.badge { padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; }
+.EASY { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+.NORMAL { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+.HARD { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+.modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
+  display: none; align-items: center; justify-content: center; z-index: 100;
+}
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="header">
-    <h1 class="title">조합 연습</h1>
-    <div class="controls">
-      <div style="font-size:0.95rem;color:var(--muted)">최고기록: <strong id="bestTime">—</strong></div>
-      <button id="openSettings" class="secondary" aria-controls="settings">설정</button>
+  <div id="lobby" style="text-align: center;">
+    <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 40px; background: linear-gradient(to right, #fff, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MATH MASTER</h1>
+    <div style="display: grid; gap: 12px;">
+      <button onclick="startGame('record')" class="btn">기록 도전 (10회)</button>
+      <button onclick="startGame('practice')" class="btn" style="background: var(--glass); border: 1px solid var(--glass-border);">자유 연습</button>
+      <button onclick="toggleSettings(true)" class="btn" style="background: transparent; color: var(--text-muted); font-size: 0.9rem;">⚙️ 설정</button>
     </div>
+    <p style="margin-top: 30px; font-size: 0.8rem; color: var(--text-muted);">BEST: <span id="bestTime" style="color: var(--warning);">—</span></p>
   </div>
 
-  <section id="lobby" class="card">
-    <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <button id="practiceBtn" class="btn">연습 모드</button>
-      <button id="recordBtn" class="btn" style="background:#059669">기록 모드</button>
-      <button id="resetBest" class="secondary">기록 초기화</button>
-    </div>
-    <p style="color:var(--muted);margin-top:12px">문제 유형과 난이도를 설정한 뒤 모드를 선택하세요.</p>
-  </section>
-
-  <section id="practice" class="card" style="display:none;margin-top:12px;text-align:center">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <button id="backPractice" class="secondary">홈</button>
-      <div style="font-size:0.95rem;color:var(--muted)">진행: <span id="practiceProgress">0 / ∞</span></div>
-    </div>
-    <div id="practiceProblem" class="problem">시작하려면 문제를 불러오세요</div>
-    <div class="answer-row"><input id="practiceInput" type="text" inputmode="numeric" placeholder="숫자만 입력" aria-label="정답 입력" /></div>
-    <div style="display:flex;gap:8px;margin-top:12px"><button id="practiceSubmit" class="btn">제출</button><button id="practiceNext" class="secondary">다음</button></div>
-    <div id="practiceFeedback" class="feedback" aria-live="polite"></div>
-  </section>
-
-  <section id="record" class="card" style="display:none;margin-top:12px;text-align:center">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <button id="backRecord" class="secondary">홈</button>
-      <div style="font-size:0.95rem;color:var(--muted)">진행: <span id="recordProgress">0 / 10</span> &nbsp; 시간: <span id="recordTimer">0s</span></div>
-    </div>
-    <div id="recordProblem" class="problem">시작하려면 문제를 불러오세요</div>
-    <div class="answer-row"><input id="recordInput" type="text" inputmode="numeric" placeholder="숫자만 입력" aria-label="정답 입력" /></div>
-    <div style="display:flex;gap:8px;margin-top:12px"><button id="recordSubmit" class="btn">제출</button><button id="recordNext" class="secondary">다음</button></div>
-    <div id="recordFeedback" class="feedback" aria-live="polite"></div>
-  </section>
-
-  <div id="settings" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal-card" id="settingsCard">
-      <div style="display:flex;justify-content:space-between;align-items:center"><strong>설정</strong><button id="closeSettings" class="secondary">닫기</button></div>
-      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
-        <label><input id="tComb" type="checkbox" checked /> 조합 (nCr)</label>
-        <label><input id="tFact" type="checkbox" checked /> 팩토리얼 (n!)</label>
-        <label><input id="tMulti" type="checkbox" checked /> 중복조합 (nHr)</label>
-        <label><input id="tPerm" type="checkbox" checked /> 순열 (nPr)</label>
-        <div>난이도</div>
-        <label><input name="diff" type="radio" value="easy" /> 쉬움</label>
-        <label><input name="diff" type="radio" value="normal" /> 보통</label>
-        <label><input name="diff" type="radio" value="hard" checked /> 어려움</label>
+  <section id="gameArea" class="card" style="display:none;">
+    <div class="top-row">
+      <div class="status-left">
+        <div id="diffBadge" class="badge NORMAL">NORMAL</div>
+        <div id="comboDisplay" class="combo-mini">0 COMBO</div>
+      </div>
+      <div id="liveTimer" class="timer-display">0.0s</div>
+      <div class="quit-area">
+        <div onclick="location.reload()" style="cursor: pointer; font-size: 0.75rem; color: var(--text-muted); font-weight: 800;">✕ QUIT</div>
       </div>
     </div>
+    
+    <div id="comboGauge" class="gauge-area"><div id="comboBar" style="width:100%; height:100%; background:var(--success); transform-origin:left; transition: transform 0.1s linear;"></div></div>
+
+    <div id="problemDisplay" class="problem"></div>
+
+    <input id="answerInput" type="text" inputmode="numeric" placeholder="정답 입력" autocomplete="off" />
+    <button id="submitBtn" class="btn">확인</button>
+    <div id="statusInfo" style="text-align: center; font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-top: 5px;"></div>
+  </section>
+
+  <div id="resultModal" class="modal">
+    <div style="background: #1e293b; width: 90%; max-width: 380px; padding: 40px 30px; border-radius: 32px; text-align: center;">
+      <div style="color: var(--accent); font-weight: 800; letter-spacing: 2px;">MISSION COMPLETE</div>
+      <div id="newRecordLabel" style="background: var(--warning); color: #000; padding: 4px 12px; border-radius: 99px; font-size: 0.8rem; font-weight: 800; display: none; margin: 15px 0;">NEW RECORD!</div>
+      <div id="finalTime" style="font-size: 4rem; font-weight: 900; color: #fff; margin: 10px 0;">0.0s</div>
+      <button onclick="location.reload()" class="btn" style="width: 100%;">다시 도전</button>
+    </div>
   </div>
 
-  <footer>연습용 • 정확한 정수 계산 (BigInt)</footer>
+  <div id="settingsModal" class="modal">
+    <div style="background: #1e293b; padding: 30px; border-radius: 28px; width: 320px;">
+      <h3 style="margin-bottom: 20px; text-align: center;">문제 구성</h3>
+      <div id="typeChecks" style="display: grid; gap: 15px; margin-bottom: 30px;">
+        <label><input type="checkbox" data-type="fact" checked> 팩토리얼 (!)</label>
+        <label><input type="checkbox" data-type="perm" checked> 순열 (P)</label>
+        <label><input type="checkbox" data-type="comb" checked> 조합 (C)</label>
+        <label><input type="checkbox" data-type="multi" checked> 중복조합 (H)</label>
+      </div>
+      <button onclick="toggleSettings(false)" class="btn" style="width: 100%;">저장</button>
+    </div>
+  </div>
 </div>
 
 <script>
-(() => {
-  'use strict';
-  const DIFF = {
-    easy: {factMax:3, combMax:4, permMax:4, multiSumMax:5},
-    normal: {factMax:5, combMax:8, permMax:8, multiSumMax:7},
-    hard: {factMax:7, combMax:12, permMax:12, multiSumMax:10}
-  };
+const fact = n => n <= 1n ? 1n : BigInt(n) * fact(n - 1n);
+const nCr = (n, r) => {
+    if (r < 0 || r > n) return 0n;
+    if (r > n / 2) r = n - r;
+    let num = 1n;
+    for (let i = 0; i < r; i++) num = num * BigInt(n - i) / BigInt(i + 1);
+    return num;
+};
+const nPr = (n, r) => {
+    if (r < 0 || r > n) return 0n;
+    let num = 1n;
+    for (let i = 0; i < r; i++) num *= BigInt(n - i);
+    return num;
+};
 
-  // BigInt helpers
-  const factorialBig = n => { let r = 1n; for (let i = 2; i <= n; i++) r *= BigInt(i); return r; };
-  const nCr = (n,r) => { if (r<0||r>n) return null; return factorialBig(n)/(factorialBig(r)*factorialBig(n-r)); };
-  const nPr = (n,r) => { if (r<0||r>n) return null; return factorialBig(n)/factorialBig(n-r); };
-  const nHr = (n,r) => { if (n<=0||r<0) return null; return nCr(n+r-1, r); };
+const state = { 
+    mode: null, score: 0, startTime: 0, combo: 0, comboTime: 100, 
+    interval: null, timerInterval: null, lock: false, current: null 
+};
 
-  // State
-  const state = { mode:null, totalPresented:0, correctCount:0, currentProblem:null, startTime:0, recordStart:0, recordCorrect:0 };
+const UI = {
+  lobby: document.getElementById('lobby'), game: document.getElementById('gameArea'), 
+  problem: document.getElementById('problemDisplay'), input: document.getElementById('answerInput'), 
+  combo: document.getElementById('comboDisplay'), bar: document.getElementById('comboBar'),
+  gauge: document.getElementById('comboGauge'), badge: document.getElementById('diffBadge'), 
+  status: document.getElementById('statusInfo'), resultModal: document.getElementById('resultModal'), 
+  finalTime: document.getElementById('finalTime'), newRecord: document.getElementById('newRecordLabel'), 
+  submit: document.getElementById('submitBtn'), liveTimer: document.getElementById('liveTimer')
+};
 
-  // Nodes
-  const dom = {
-    best: document.getElementById('bestTime'),
-    lobby: document.getElementById('lobby'),
-    practice: { root: document.getElementById('practice'), problem: document.getElementById('practiceProblem'), input: document.getElementById('practiceInput'), feedback: document.getElementById('practiceFeedback'), progress: document.getElementById('practiceProgress') },
-    record: { root: document.getElementById('record'), problem: document.getElementById('recordProblem'), input: document.getElementById('recordInput'), feedback: document.getElementById('recordFeedback'), progress: document.getElementById('recordProgress'), timer: document.getElementById('recordTimer') },
-    settings: { modal: document.getElementById('settings'), card: document.getElementById('settingsCard') }
-  };
+window.toggleSettings = (show) => { document.getElementById('settingsModal').style.display = show ? 'flex' : 'none'; };
 
-  // Controls
-  document.getElementById('practiceBtn').addEventListener('click', ()=>start('practice'));
-  document.getElementById('recordBtn').addEventListener('click', ()=>start('record'));
-  document.getElementById('resetBest').addEventListener('click', ()=>{ localStorage.removeItem('combo_best_time'); updateBest(); });
-  document.getElementById('openSettings').addEventListener('click', openSettings);
-  document.getElementById('openSettingsBtn')?.addEventListener('click', openSettings);
-  document.getElementById('closeSettings').addEventListener('click', closeSettings);
+window.startGame = (mode) => {
+  state.mode = mode; state.score = 0; state.combo = 0; state.startTime = Date.now();
+  UI.lobby.style.display = 'none'; UI.game.style.display = 'flex';
+  
+  // 실시간 타이머 시작
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => {
+    const elapsed = ((Date.now() - state.startTime) / 1000).toFixed(1);
+    UI.liveTimer.textContent = elapsed + 's';
+  }, 100);
 
-  document.getElementById('backPractice').addEventListener('click', endSession);
-  document.getElementById('backRecord').addEventListener('click', endSession);
+  next();
+};
 
-  document.getElementById('practiceSubmit').addEventListener('click', ()=>submit('practice'));
-  document.getElementById('practiceNext').addEventListener('click', ()=>nextQ('practice'));
-  document.getElementById('recordSubmit').addEventListener('click', ()=>submit('record'));
-  document.getElementById('recordNext').addEventListener('click', ()=>nextQ('record'));
+function generate() {
+  const types = Array.from(document.querySelectorAll('#typeChecks input:checked')).map(el => el.dataset.type);
+  const type = types.length > 0 ? types[Math.floor(Math.random() * types.length)] : 'comb';
+  let n, r, ans;
 
-  dom.practice.input.addEventListener('keydown', e=>{ if(e.key==='Enter') submit('practice'); });
-  dom.record.input.addEventListener('keydown', e=>{ if(e.key==='Enter') submit('record'); });
-
-  function getDiff(){ const r = document.querySelector('input[name="diff"]:checked'); return r? r.value : 'hard'; }
-  function enabledTypes(){ const res = []; if(document.getElementById('tComb').checked) res.push('comb'); if(document.getElementById('tFact').checked) res.push('fact'); if(document.getElementById('tMulti').checked) res.push('multi'); if(document.getElementById('tPerm').checked) res.push('perm'); return res; }
-
-  function updateBest(){ const t = localStorage.getItem('combo_best_time'); dom.best.textContent = t ? t + 's' : '—'; }
-  updateBest();
-
-  function pickProblem(){ const types = enabledTypes(); if(types.length===0) return null; const cfg = DIFF[getDiff()]; for(let attempts=0; attempts<40; attempts++){ const type = types[Math.floor(Math.random()*types.length)]; if(type==='fact'){ const n = Math.floor(Math.random()*(cfg.factMax+1)); return {type:'fact', n}; }
-    if(type==='multi'){ const S = Math.floor(Math.random()*(cfg.multiSumMax-1))+2; const r = Math.floor(Math.random()*(S-1))+1; const n = S - r + 1; if(n>=1) return {type:'multi', n, r}; }
-    if(type==='perm'){ const n = Math.floor(Math.random()*cfg.permMax)+1; let rMax = Math.min(n, Math.max(1, Math.floor(n/2))); const r = Math.floor(Math.random()*rMax)+1; return {type:'perm', n, r}; }
-    if(type==='comb'){ const n = Math.floor(Math.random()*(cfg.combMax-1))+2; if(n<2) continue; const cand=[]; for(let r=1;r<=n-1;r++){ if(n>=10){ if(r<=4 || (n-r)<=4) cand.push(r); } else cand.push(r); } if(cand.length===0) continue; const r = cand[Math.floor(Math.random()*cand.length)]; return {type:'comb', n, r}; }
+  while(true) {
+    if (type === 'fact') {
+      n = Math.floor(Math.random() * 8) + 1;
+      ans = fact(BigInt(n));
+    } else {
+      n = Math.floor(Math.random() * 11) + 2; 
+      r = Math.floor(Math.random() * (n - 1)) + 1;
+      let effN = n, effR = r;
+      if (type === 'multi') { effN = n + r - 1; effR = r; }
+      if (effN > 12) continue;
+      if (type === 'perm') { if (effN > 5 && effR > 4) continue; } 
+      else { let calcR = Math.min(effR, effN - effR); if (effN > 10 && calcR > 4) continue; }
+      if (type === 'comb') ans = nCr(n, r);
+      else if (type === 'perm') ans = nPr(n, r);
+      else ans = nCr(n + r - 1, r);
+    }
+    break;
   }
-  return {type:'fact', n: Math.floor(Math.random()*(DIFF.hard.factMax+1))}; }
+  return { type, n, r, ans: ans.toString() };
+}
 
-  function renderProblem(p){ if(!p) return '설정에서 문제 유형을 켜세요'; if(p.type==='fact') return `${p.n}!`; if(p.type==='comb') return `<sub>${p.n}</sub>C<sub>${p.r}</sub>`; if(p.type==='perm') return `<sub>${p.n}</sub>P<sub>${p.r}</sub>`; if(p.type==='multi') return `<sub>${p.n}</sub>H<sub>${p.r}</sub>`; return ''; }
-  function answerOf(p){ if(!p) return null; if(p.type==='fact') return factorialBig(p.n).toString(); if(p.type==='comb') return nCr(p.n,p.r).toString(); if(p.type==='perm') return nPr(p.n,p.r).toString(); if(p.type==='multi') return nHr(p.n,p.r).toString(); return null; }
-
-  function start(mode){ if(enabledTypes().length===0){ openSettings(); (mode==='practice' ? dom.practice.feedback : dom.record.feedback).innerHTML = '<span class="wrong">문제 유형을 하나 이상 선택하세요</span>'; return; } state.mode = mode; state.totalPresented = 0; state.correctCount = 0; state.recordCorrect = 0; if(mode==='practice') openPractice(); else openRecord(); }
-
-  function openPractice(){ dom.lobby.style.display='none'; dom.practice.root.style.display='block'; dom.record.root.style.display='none'; dom.practice.feedback.textContent=''; dom.practice.input.value=''; dom.practice.input.focus(); dom.practice.progress.textContent = '0 / ∞'; nextQ('practice'); }
-  function openRecord(){ dom.lobby.style.display='none'; dom.record.root.style.display='block'; dom.practice.root.style.display='none'; state.recordStart = Date.now(); state.recordCorrect = 0; dom.record.progress.textContent='0 / 10'; dom.record.timer.textContent='0s'; dom.record.feedback.textContent=''; dom.record.input.value=''; dom.record.input.focus(); if(dom.record.timer._i) clearInterval(dom.record.timer._i); dom.record.timer._i = setInterval(()=> dom.record.timer.textContent = Math.round((Date.now()-state.recordStart)/1000) + 's', 300); nextQ('record'); }
-
-  function endSession(){ state.mode = null; dom.lobby.style.display='block'; dom.practice.root.style.display='none'; dom.record.root.style.display='none'; if(dom.record.timer._i) clearInterval(dom.record.timer._i); }
-
-  function nextQ(mode){ const p = pickProblem(); if(!p){ if(mode==='practice') dom.practice.problem.innerHTML='문제 유형을 선택하세요'; else dom.record.problem.innerHTML='문제 유형을 선택하세요'; return; } state.currentProblem = p; state.startTime = Date.now(); state.totalPresented++; const tgt = mode==='practice' ? dom.practice.problem : dom.record.problem; tgt.innerHTML = renderProblem(p); dom[mode].feedback.textContent=''; dom[mode].input.value=''; dom[mode].input.focus(); if(mode==='practice') dom.practice.progress.textContent = `${state.totalPresented} / ∞`; console.debug('new problem', p, mode); }
-
-  function parseBigIntInput(s){ const cleaned = s.replace(/[^0-9-]/g,''); if(cleaned==='') throw new Error('invalid'); return BigInt(cleaned).toString(); }
-
-  function submit(mode){ const input = dom[mode].input; const raw = input.value.trim(); if(!raw) return; const p = state.currentProblem; if(!p) return; const correct = answerOf(p); let user;
-    try{ user = parseBigIntInput(raw); } catch(e){ showFeedback(mode, false, correct); return; }
-    if(user === BigInt(correct).toString()){ state.correctCount++; if(mode==='record'){ state.recordCorrect++; dom.record.progress.textContent = `${state.recordCorrect} / 10`; dom.record.feedback.innerHTML = '<span class="correct">정답!</span>'; } else dom.practice.feedback.innerHTML = '<span class="correct">정답!</span>'; showFeedback(mode, true); } else { showFeedback(mode, false, correct); }
-    if(mode==='record' && state.recordCorrect>=10){ finishRecord(); return; }
-    setTimeout(()=> nextQ(mode), 700);
+function next() {
+  state.lock = false; state.current = generate();
+  const v = parseInt(state.current.ans);
+  UI.badge.textContent = v < 50 ? 'EASY' : v < 400 ? 'NORMAL' : 'HARD';
+  UI.badge.className = `badge ${UI.badge.textContent}`;
+  UI.input.value = ''; UI.input.disabled = false; UI.input.className = ''; UI.submit.disabled = false;
+  setTimeout(() => UI.input.focus(), 50);
+  
+  const p = state.current;
+  if (p.type === 'fact') UI.problem.innerHTML = `<span class="math-exp">${p.n}!</span>`;
+  else {
+    const s = p.type === 'comb' ? 'C' : p.type === 'perm' ? 'P' : 'H';
+    UI.problem.innerHTML = `<span class="math-exp"><span class="sub-n">${p.n}</span><span style="font-weight:900;margin:0 0.15em;">${s}</span><span class="sub-r">${p.r}</span></span>`;
   }
+  UI.status.textContent = state.mode === 'record' ? `PROGRESS: ${state.score + 1} / 10` : 'FREE PRACTICE';
+}
 
-  function showFeedback(mode, isCorrect, correctAnswer=null){ const fb = dom[mode].feedback; const tgt = dom[mode].problem; if(isCorrect===true){ fb.classList.remove('wrong'); fb.classList.add('correct'); fb.innerHTML = '<span class="correct">정답!</span>'; } else if(isCorrect===false){ fb.classList.remove('correct'); fb.classList.add('wrong'); fb.innerHTML = `<span class="wrong">틀렸습니다</span> 정답: ${correctAnswer}`; } else { fb.innerHTML=''; fb.classList.remove('correct','wrong'); } }
+function check() {
+  if (state.lock || !UI.input.value) return;
+  state.lock = true;
+  const isCorrect = UI.input.value.trim() === state.current.ans;
 
-  function finishRecord(){ const elapsed = Math.round((Date.now()-state.recordStart)/1000); dom.record.feedback.innerHTML = `<div class="correct">기록 완료! ${elapsed}s</div>`; const prev = localStorage.getItem('combo_best_time'); if(!prev || elapsed < Number(prev)){ localStorage.setItem('combo_best_time', String(elapsed)); dom.record.feedback.innerHTML += '<div class="small">최고기록 갱신!</div>'; updateBest(); } if(dom.record.timer._i) clearInterval(dom.record.timer._i); state.mode = null; setTimeout(()=>{ dom.lobby.style.display='block'; dom.record.root.style.display='none'; }, 900); }
+  if (isCorrect) {
+    state.score++; state.combo++;
+    UI.combo.textContent = `${state.combo} COMBO`;
+    UI.combo.classList.add('combo-visible');
+    const color = state.combo < 5 ? '#10b981' : state.combo < 10 ? '#f59e0b' : '#ef4444';
+    UI.bar.style.backgroundColor = color; UI.combo.style.color = color;
+    startTimer();
+    setTimeout(() => { if (state.mode === 'record' && state.score >= 10) finish(); else next(); }, 500);
+  } else {
+    UI.input.value = state.current.ans; 
+    UI.input.classList.add('wrong-answer'); 
+    UI.input.disabled = true; UI.submit.disabled = true;
+    resetCombo();
+    setTimeout(next, 1200);
+  }
+}
 
-  // settings
-  function openSettings(){ dom.settings.modal.style.display='flex'; dom.settings.modal.setAttribute('aria-hidden','false'); }
-  function closeSettings(){ dom.settings.modal.style.display='none'; dom.settings.modal.setAttribute('aria-hidden','true'); }
+function startTimer() {
+  clearInterval(state.interval); state.comboTime = 100; UI.gauge.style.opacity = 1;
+  const speed = Math.max(0.12, 0.5 - (state.combo * 0.03));
+  state.interval = setInterval(() => {
+    state.comboTime -= speed; UI.bar.style.transform = `scaleX(${state.comboTime/100})`;
+    if(state.comboTime <= 0) resetCombo();
+  }, 20);
+}
 
-  // math answers
-  // reuse factorialBig, nCr, nPr, nHr
+function resetCombo() { clearInterval(state.interval); state.combo = 0; UI.gauge.style.opacity = 0; UI.combo.classList.remove('combo-visible'); }
 
-  // init
-  updateBest(); console.debug('fresh app ready');
-})();
+function finish() {
+  clearInterval(state.timerInterval);
+  const time = ((Date.now() - state.startTime) / 1000).toFixed(1);
+  const best = localStorage.getItem('mm_v8_best');
+  UI.finalTime.textContent = time + 's';
+  if (!best || parseFloat(time) < parseFloat(best)) { localStorage.setItem('mm_v8_best', time); UI.newRecord.style.display = 'inline-block'; }
+  else UI.newRecord.style.display = 'none';
+  UI.resultModal.style.display = 'flex';
+}
+
+UI.submit.onclick = check;
+UI.input.onkeydown = (e) => { if(e.key === 'Enter') check(); };
+const b = localStorage.getItem('mm_v8_best');
+if(b) document.getElementById('bestTime').textContent = b + 's';
 </script>
 </body>
 </html>
-
-
